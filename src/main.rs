@@ -2,7 +2,9 @@ fn main() {
     println!("Hello, world!");
 }
 
-pub mod inventory_struct {
+pub mod product {
+    use crate::{inventory_struct::_ProductCategory, product_status::_ProductStatus};
+
     #[allow(dead_code)]
     pub struct Product {
         id: String,
@@ -13,15 +15,51 @@ pub mod inventory_struct {
         status: _ProductStatus,
     }
 
-    #[allow(unused_variables)]
-    #[allow(dead_code)]
-    pub enum _ProductCategory {
-        Electronics,
-        Furniture,
-        Clothing,
-        Food,
-        Books,
+    impl Product {
+        pub fn new(
+            id: String,
+            name: String,
+            category: _ProductCategory,
+            quantity: u32,
+            price: u64,
+            status: _ProductStatus,
+        ) -> Result<Self, String> {
+            if price == 0 {
+                return Err(String::from("price cannot be empty"));
+            }
+            if name.is_empty() {
+                return Err(String::from("name cannot be empty"));
+            }
+            let id_name = name.contains("PROD-");
+            if !id_name || name.len() > 11 {
+                return Err(String::from(
+                    "id must have PROD- or length od id is greater than 10",
+                ));
+            }
+
+            let status = match quantity {
+                x if x == 0 => _ProductStatus::OutOfStock,
+                x if x <= 5 => _ProductStatus::LowStock(x),
+                _ => _ProductStatus::InStock,
+            };
+            Ok(Self {
+                id,
+                name,
+                category,
+                quantity,
+                price,
+                status,
+            })
+        }
+        // pub fn change_status(&mut self,status:_ProductStatus){
+        //     match status{
+
+        //     }
+        // }
     }
+}
+pub mod product_status {
+
     #[allow(dead_code)]
     pub enum _ProductStatus {
         InStock,
@@ -29,21 +67,6 @@ pub mod inventory_struct {
         OutOfStock,
         Discontinued,
     }
-
-    pub enum _UnitOfMeasure {
-        Each,
-        Kilogram,
-        Meter,
-        Liter,
-    }
-
-    // impl _ProductStatus
-}
-
-mod enum_implementation_block {
-    use crate::inventory_struct::_ProductCategory;
-    use crate::inventory_struct::_ProductStatus;
-    use crate::inventory_struct::Product;
 
     #[allow(dead_code)]
     impl _ProductStatus {
@@ -62,6 +85,28 @@ mod enum_implementation_block {
             }
         }
     }
+}
+
+pub mod unit_of_measure {
+
+    pub enum _UnitOfMeasure {
+        Each,
+        Kilogram,
+        Meter,
+        Liter,
+    }
+}
+pub mod product_category {
+
+    #[allow(unused_variables)]
+    #[allow(dead_code)]
+    pub enum _ProductCategory {
+        Electronics,
+        Furniture,
+        Clothing,
+        Food,
+        Books,
+    }
 
     #[allow(dead_code)]
     impl _ProductCategory {
@@ -75,15 +120,9 @@ mod enum_implementation_block {
             }
         }
     }
-
-    impl Product {
-        pub fn new()->Result<Self,{
-            Self{
-
-            }
-        }
-    }
 }
+
+// impl _ProductStatus
 
 mod producr_category {}
 
