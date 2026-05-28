@@ -10,12 +10,28 @@ fn main() {
         product_status::_ProductStatus::InStock,
     );
     let mut inventory_new = inventory::Inventory::new();
-    let add_product = inventory_new.add_product(new_product.unwrap());
+
+
+    let add_product= inventory_new.add_product(new_product.unwrap());
     println!("product:{:?}", add_product);
+
+    let new_product_2=product::Product::new(
+        "PROD-2342".to_string(),
+        "rug".to_owned(),
+        product_category::_ProductCategory::Clothing,
+        334,
+        243313,
+        product_status::_ProductStatus::InStock,
+    );
+    let mut inventory_new_1= inventory::Inventory::new();
+    let add_product_1= inventory_new_1.add_product(new_product_2.unwrap());
+    println!("product:{:?}", add_product_1);
     // new_product.
 }
 
 pub mod product {
+    use core::fmt;
+
     use crate::{product_category::_ProductCategory, product_status::_ProductStatus};
 
     #[allow(dead_code)]
@@ -83,10 +99,20 @@ pub mod product {
             })
         }
     }
+
+
+
+
+    impl fmt::Display for Product{
+        fn fmt(&self,f:&mut fmt::Formatter<'_>)->fmt::Result{
+            write!(f,"product id:{:?}\n name:{:?}\ncategory:{:?}\nprice:{:?}\nstatus:{:?}\n",self.id,self.name,self.category,self.quantity,self.price,self.status)
+        }
+    }
 }
 pub mod product_status {
 
     #[allow(dead_code)]
+    #[derive(Debug)]
     pub enum _ProductStatus {
         InStock,
         LowStock(u32),
@@ -126,6 +152,7 @@ pub mod product_category {
 
     #[allow(unused_variables)]
     #[allow(dead_code)]
+    #[derive(Debug)]
     pub enum _ProductCategory {
         Electronics,
         Furniture,
@@ -170,30 +197,22 @@ pub mod inventory {
                 products: HashMap::new(),
             }
         }
-        pub fn add_product(&mut self, collections: product::Product) -> Result<(), String> {
+        pub fn add_product(&mut self, collections: product::Product) -> Result<(), inventory_errors::InventoryErrors> {
 
             let result=self.products.insert(1, collections);
-            result.ok_or(
+            let _output=result.ok_or(
                 String::from("cannot add product")
             );
             Ok(())
         }
 
-        // pub fn find_product_by_id(&self,id:u32){
-        //     let result=
-        // }
-        //     pub fn new()->Self{
-        //         Self { products: Vec::new() }
-        //     }
-        //     pub fn add_product(&mut self,collection:product::Product)->Result<(),String>{
-        //         Ok(self.products.push(collection))
+        pub fn remove_product(&mut self,collection:Inventory,id:u8)->Result<Self,inventory_errors::InventoryErrors>{
+            let result=collection.products.iter().for_each(|elements| println!("elements:{}",elements));
 
-        //     }
+        }
 
-        //     pub fn  find_product(&self,id:)
-        // }
     }
-    mod producr_category {}
+    mod product_category {}
 
     mod error_handling {}
 
@@ -210,6 +229,7 @@ pub mod inventory {
             InvalidProductData(String),
             PriceMismatch { expected: u64, actual: u64 },
         }
+
 
 
         impl fmt::Display for InventoryErrors{
