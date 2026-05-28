@@ -1,9 +1,15 @@
 fn main() {
     println!("Hello, world!");
+
+    let new_product=product::Product::new("PROD-2345".to_string(), "towel".to_owned(), product_category::_ProductCategory::Clothing, 334, 34456, product_status::_ProductStatus::InStock);
+    let mut inventory_new=inventory::Inventory::new();
+    let add_product=inventory_new.add_product(new_product.unwrap());
+    println!("product:{:?}",add_product);
+    // new_product.
 }
 
 pub mod product {
-    use crate::{inventory_struct::_ProductCategory, product_status::_ProductStatus};
+    use crate::{product_category::_ProductCategory, product_status::_ProductStatus};
 
     #[allow(dead_code)]
     pub struct Product {
@@ -17,6 +23,13 @@ pub mod product {
 
     impl Product {
 
+        pub fn sell(&mut self,amount:u32)->Result<u32,String>{
+            // if amount
+            if amount >self.quantity{
+                return Err(String::from("amount cannot be greater than quantity"))
+            }
+            Ok(amount * self.price as u32)
+        }
     pub fn restock(&mut self,user_quantity:u32){
         self.quantity+=user_quantity;
 
@@ -33,7 +46,7 @@ pub mod product {
             category: _ProductCategory,
             quantity: u32,
             price: u64,
-            status: _ProductStatus,
+            _status: _ProductStatus,
         ) -> Result<Self, String> {
             if price == 0 {
                 return Err(String::from("price cannot be empty"));
@@ -132,6 +145,28 @@ pub mod product_category {
 
 // impl _ProductStatus
 
+pub mod inventory{
+    // use std::iter::Product;
+
+    use crate::product;
+
+    #[allow(dead_code)]
+    pub struct Inventory{
+        products:Vec<product::Product>,
+    }
+
+    impl Inventory{
+        pub fn new()->Self{
+            Self { products: Vec::new() }
+        }
+        pub fn add_product(&mut self,collection:product::Product)->Result<(),String>{
+            Ok(self.products.push(collection))
+
+        }
+
+    }
+
+}
 mod producr_category {}
 
 mod error_handling {}
