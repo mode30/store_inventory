@@ -16,6 +16,17 @@ pub mod product {
     }
 
     impl Product {
+
+    pub fn restock(&mut self,user_quantity:u32){
+        self.quantity+=user_quantity;
+
+            let status = match user_quantity {
+                x if x == 0 => _ProductStatus::OutOfStock,
+                x if x <= 5 => _ProductStatus::LowStock(x),
+                _ => _ProductStatus::InStock,
+            };
+        self.status=status;
+    }
         pub fn new(
             id: String,
             name: String,
@@ -51,12 +62,9 @@ pub mod product {
                 status,
             })
         }
-        // pub fn change_status(&mut self,status:_ProductStatus){
-        //     match status{
 
-        //     }
-        // }
     }
+
 }
 pub mod product_status {
 
