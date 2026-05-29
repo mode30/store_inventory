@@ -1,296 +1,8 @@
 //
-use core::fmt;
+use std::fmt;
+// use std::fmt::{Display, Formatter};
 #[allow(unused_imports)]
 use std::{collections::HashMap, error::Error, io, iter, num::ParseFloatError};
-// fn main() {
-//     println!("Hello, world!");
-//
-//     let new_product = product::Product::new(
-//         "PROD-2345".to_string(),
-//         "towel".to_owned(),
-//         product_category::_ProductCategory::Clothing,
-//         334,
-//         34456,
-//         product_status::_ProductStatus::InStock,
-//     );
-//     let mut inventory_new = inventory::Inventory::new();
-//
-//     let add_product = inventory_new.add_product(new_product.unwrap());
-//     println!("product:{:?}", add_product);
-//
-//     let new_product_2 = product::Product::new(
-//         "PROD-2342".to_string(),
-//         "rug".to_owned(),
-//         product_category::_ProductCategory::Clothing,
-//         334,
-//         243313,
-//         product_status::_ProductStatus::InStock,
-//     );
-//     let mut inventory_new_1 = inventory::Inventory::new();
-//     let add_product_1 = inventory_new_1.add_product(new_product_2.unwrap());
-//     println!("product:{:?}", add_product_1);
-//
-//     // new_product
-// }
-//
-// pub mod product {
-//     use core::fmt;
-//
-//     use crate::{product_category::_ProductCategory, product_status::_ProductStatus};
-//
-//     #[allow(dead_code)]
-//     #[derive(Debug)]
-//     pub struct Product {
-//         id: String,
-//         name: String,
-//         category: _ProductCategory,
-//         quantity: u32,
-//         price: u64,
-//         status: _ProductStatus,
-//     }
-//
-//     impl Product {
-//         pub fn sell(&mut self, quantity: u32) -> Result<u32, String> {
-//             // if amount
-//             if quantity > self.quantity {
-//                 return Err(String::from("amount cannot be greater than quantity"));
-//             }
-//             let profit = quantity * self.price as u32;
-//             self.quantity = self.quantity - quantity;
-//             Ok(profit)
-//         }
-//         pub fn restock(&mut self, user_quantity: u32) {
-//             self.quantity += user_quantity;
-//
-//             let status = match user_quantity {
-//                 x if x == 0 => _ProductStatus::OutOfStock,
-//                 x if x <= 5 => _ProductStatus::LowStock(x),
-//                 _ => _ProductStatus::InStock,
-//             };
-//             self.status = status;
-//         }
-//         pub fn new(
-//             id: String,
-//             name: String,
-//             category: _ProductCategory,
-//             quantity: u32,
-//             price: u64,
-//             _status: _ProductStatus,
-//         ) -> Result<Self, String> {
-//             if price == 0 {
-//                 return Err(String::from("price cannot be empty"));
-//             }
-//             if name.is_empty() {
-//                 return Err(String::from("name cannot be empty"));
-//             }
-//             let id_name = name.contains("PROD-");
-//             if !id_name || name.len() > 11 {
-//                 return Err(String::from(
-//                     "id must have PROD- or length od id is greater than 10",
-//                 ));
-//             }
-//
-//             let status = match quantity {
-//                 x if x == 0 => _ProductStatus::OutOfStock,
-//                 x if x <= 5 => _ProductStatus::LowStock(x),
-//                 _ => _ProductStatus::InStock,
-//             };
-//             Ok(Self {
-//                 id,
-//                 name,
-//                 category,
-//                 quantity,
-//                 price,
-//                 status,
-//             })
-//         }
-//     }
-//
-//     impl fmt::Display for Product {
-//         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//             write!(
-//                 f,
-//                 "product id:{:?}\n name:{:?}\ncategory:{:?}\nprice:{:?}\nstatus:{:?}\n",
-//                 self.id, self.name, self.category, self.quantity, self.price, self.status
-//             )
-//         }
-//     }
-// }
-// pub mod product_status {
-//     #[allow(dead_code)]
-//     #[derive(Debug)]
-//     pub enum _ProductStatus {
-//         InStock,
-//         LowStock(u32),
-//         OutOfStock,
-//         Discontinued,
-//     }
-//
-//     #[allow(dead_code)]
-//     impl _ProductStatus {
-//         pub fn needs_reorder(&self) -> bool {
-//             match self {
-//                 _ProductStatus::OutOfStock => {
-//                     println!("needs reorder:");
-//                     true
-//                 }
-//                 _ProductStatus::LowStock(n) => {
-//                     println!("reorder needed:{}", n);
-//                     true
-//                 }
-//                 _ProductStatus::InStock => false,
-//                 _ProductStatus::Discontinued => false,
-//             }
-//         }
-//     }
-// }
-//
-// pub mod unit_of_measure {
-//
-//     pub enum _UnitOfMeasure {
-//         Each,
-//         Kilogram,
-//         Meter,
-//         Liter,
-//     }
-// }
-// pub mod product_category {
-//
-//     #[allow(unused_variables)]
-//     #[allow(dead_code)]
-//     #[derive(Debug)]
-//     pub enum _ProductCategory {
-//         Electronics,
-//         Furniture,
-//         Clothing,
-//         Food,
-//         Books,
-//     }
-//
-//     #[allow(dead_code)]
-//     impl _ProductCategory {
-//         pub fn to_aisle<'a>(&self) -> &'a str {
-//             match self {
-//                 _ProductCategory::Electronics => "aisle 1",
-//                 _ProductCategory::Furniture => "aisle 2",
-//                 _ProductCategory::Clothing => "aisle 3",
-//                 _ProductCategory::Food => "aisle 4",
-//                 _ProductCategory::Books => "aisle 5",
-//             }
-//         }
-//     }
-// }
-//
-// // impl _ProductStatus
-//
-// pub mod inventory {
-//
-//     // use std::iter::Product;
-//
-//     #[allow(dead_code)]
-//     #[allow(unused_variables)]
-//     #[allow(unused_imports)]
-//     use core::fmt;
-//
-//     #[allow(unused_imports)]
-//     use std::{
-//         collections::{self, HashMap},
-//         fmt::write,
-//     };
-//
-//
-//     #[allow(unused_imports)]
-//     use crate::{inventory, product};
-//
-//     #[allow(dead_code)]
-//     pub struct Inventory {
-//         // products:HashMap<&'a str,product::Product>,
-//         products: HashMap<u32, product::Product>,
-//         // products:HashMap<product::Product>,
-//     }
-//
-//     impl Inventory {
-//
-//
-//     impl fmt::Display for Inventory {
-//         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//             write!(f, "description:{}", self.products)
-//         }
-//     }
-//         pub fn new() -> Self {
-//             Self {
-//                 products: HashMap::new(),
-//             }
-//         }
-//         pub fn add_product(
-//             &mut self,
-//             collections: product::Product,
-//         ) -> Result<(), inventory_errors::InventoryErrors> {
-//             let result = self.products.insert(1, collections);
-//             let _output = result.ok_or(String::from("cannot add product"));
-//             Ok(())
-//         }
-//
-//         // pub fn remove_product(&mut self,collection:Inventory,id:u8)->Result<Self,inventory_errors::InventoryErrors>{
-//         //     let product_to_remove=collec
-//         //     // let result=collection.products.iter().for_each(|elements| println!("elements:{}",elements));
-//         //
-//         // }
-//     }
-//     mod product_category {}
-//
-//     mod inventory_errors {
-//         use core::fmt;
-//         use std::{error::Error, num::ParseIntError};
-//
-//         #[derive(Debug)]
-//         pub enum InventoryErrors {
-//             ProductNotFound(String),
-//             InsufficientStock { requested: u32, available: u32 },
-//             DuplicateProduct(String),
-//             InvalidProductData(String),
-//             PriceMismatch { expected: u64, actual: u64 },
-//         }
-//
-//         impl fmt::Display for InventoryErrors {
-//             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//                 match self {
-//                     InventoryErrors::ProductNotFound(s) => write!(f, "product not found:{}", s),
-//                     InventoryErrors::InsufficientStock {
-//                         requested,
-//                         available,
-//                     } => {
-//                         write!(f, "insufficient stock:{}:{}", requested, available)
-//                     }
-//                     InventoryErrors::DuplicateProduct(s) => write!(f, "product not found:{}", s),
-//                     InventoryErrors::InvalidProductData(s) => write!(f, "product not found:{}", s),
-//                     InventoryErrors::PriceMismatch { expected, actual } => {
-//                         write!(f, "product not found:{}:{}", expected, actual)
-//                     }
-//                 }
-//             }
-//         }
-//
-//         impl Error for InventoryErrors {}
-//
-//         impl From<ParseIntError> for InventoryErrors {
-//             fn from(error: ParseIntError) -> Self {
-//                 InventoryErrors::InvalidProductData(error.to_string())
-//             }
-//         }
-//     }
-//
-//     // impl fmt::Display for Inventory{
-//     //
-//     //     fn fmt(&self,f:&mut fmt::Formatter<'_>)->fmt::Result{
-//     //         for products in inventory::Inventory{
-//     //         write!(
-//     //             f,"{}"
-//     //         },self.products)
-//     //     }
-//     // }
-// }
-//
 
 #[derive(Debug)]
 enum ProductCategory {
@@ -379,6 +91,15 @@ fn main() {
         ProductStatus::OutOfStock,
     );
 
+    let product_10 = Product::new(
+        "PROD-1234".to_string(),
+        "Iron man".to_owned(),
+        ProductCategory::Books,
+        1001,
+        83.5,
+        ProductStatus::OutOfStock,
+    );
+
     let mut new_container = Inventory::new();
     new_container.add_products(product_9.unwrap());
     new_container.add_products(product_1);
@@ -389,9 +110,10 @@ fn main() {
     new_container.add_products(product_6.unwrap());
     new_container.add_products(product_7.unwrap());
     new_container.add_products(product_8.unwrap());
+    new_container.add_products(product_10.unwrap());
 
-    for products in new_container.containers.iter() {
-        println!("products:{:?}", products);
+    for (index, products) in new_container.containers.iter().enumerate() {
+        println!("{}. products:{}", index, products);
     }
 }
 
@@ -416,10 +138,67 @@ impl Inventory {
         }
     }
 
+    #[allow(dead_code)]
     fn add_products(&mut self, product: Product) {
         // fn add_products(&mut self, product: Product) -> Result<(), io::Error> {
         self.containers.push(product);
         // Ok(())
+    }
+
+    #[allow(dead_code)]
+    fn get_all_product(&self) -> Result<(), ErrorHandling> {
+        // fn get_all_product(&self,containers:Inventory)->Result<(),ErrorHandling>{
+        if self.containers.is_empty() {
+            return Err(ErrorHandling::InvalidEntry(
+                " product list empty".to_string(),
+            ));
+        }
+        for (index, products) in self.containers.iter().enumerate() {
+            println!("{}.{}", index, products);
+        }
+
+        Ok(())
+    }
+
+    #[allow(dead_code)]
+    fn get_product(&self) -> Result<bool, ErrorHandling> {
+        let all_product = &self.get_all_product()?;
+        println!("product list:{:?}", all_product);
+        println!("enter number of product to get");
+        let user_input_result =
+            user_input::atoi32("enter number of product to get").unwrap_or_default();
+        let user_input_result = user_input_result as usize;
+        let option_result = self.containers.get(user_input_result);
+        option_result
+            .ok_or_else(|| {
+                ErrorHandling::InvalidEntry("error cannot find product at this number".to_owned())
+            })
+            .map(|product| {
+                println!("found product: {:?}", product);
+                true
+            })
+
+        // option_result.ok_or_else(||ErrorHandling::InvalidEntry(String::from("Invalid entry".to_owned()).map
+        // let option_result = self.containers.get(user_input_result).ok_or(ErrorHandling::InvalidEntry(String::from("invalid entry".to_string())))
+        // option_result.ok_or_else(||ErrorHandling::)
+    }
+
+    fn remove_product<'a>(&mut self) -> Result<&'a Product, ErrorHandling> {
+        let all_product = &self.get_all_product()?;
+        println!("product list:{:?}", all_product);
+
+        let buffer = user_input::atoi32("enter product to edit").unwrap();
+        // let buffer = buffer as usize;
+        let user_input = &self.containers.get(buffer as usize);
+        let user_input=user_input
+            .ok_or_else(|| ErrorHandling::InvalidEntry("error getting input ".to_string()))
+            .map(|product|{
+                 println!("product removed:{}",product);
+            Ok(product))?;
+            )}
+        // Ok(user_input)
+
+        // Ok(removed_product)
     }
 }
 impl Product {
@@ -434,6 +213,12 @@ impl Product {
         if name.is_empty() || id.is_empty() || price <= 0.0 {
             return Err(ErrorHandling::InvalidEntry("incorrect input".to_owned()));
         }
+        // let contains_prod = name.contains("PROD");
+        // if !contains_prod {
+        //     return Err(ErrorHandling::InvalidEntry(
+        //         "name must contain PROD-****".to_owned(),
+        //     ));
+        // }
 
         Ok(Self {
             id,
@@ -489,6 +274,10 @@ impl Product {
         self.quantity += amount as u32;
         Ok(())
     }
+
+    // fn bulk add(){
+    //
+    // }
 }
 
 impl Error for ErrorHandling {}
@@ -534,5 +323,50 @@ impl Default for Product {
             price: 123.5,
             status: ProductStatus::InStock,
         }
+    }
+}
+impl fmt::Display for Product {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "id:{:?}\nname:{:?}\n,category:{:?}\n,quantity:{:?}\n,price:{:?}\n,status:{:?}\n",
+            self.id, self.name, self.category, self.quantity, self.price, self.status
+        )
+    }
+}
+
+impl fmt::Display for Inventory {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "inventory list")?;
+        for (index, products) in self.containers.iter().enumerate() {
+            writeln!(f, "{}.{}", index, products)?
+        }
+        Ok(())
+    }
+}
+
+mod user_input {
+    use std::io;
+
+    // use crate::user_input;
+
+    #[allow(dead_code)]
+    pub fn user_input(prompt: &'static str) -> Result<String, io::Error> {
+        println!("{}", prompt);
+        let mut user_input = String::new();
+        if user_input.is_empty() {
+            return Err(io::Error::new(io::ErrorKind::NotFound, "nan".to_string()));
+        }
+        std::io::stdin().read_line(&mut user_input)?;
+        let user_input = user_input.trim();
+        Ok(user_input.to_string())
+    }
+
+    #[allow(dead_code)]
+    pub fn atoi32(prompt: &'static str) -> Result<i32, std::num::ParseIntError> {
+        let buffer = user_input(prompt).unwrap_or_default();
+        let buffer_converted = buffer.trim().parse::<i32>()?;
+        // .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "nan".to_string()))?;
+        Ok(buffer_converted)
     }
 }
