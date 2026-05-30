@@ -1,22 +1,48 @@
+pub mod pos {
+
+    pub struct Customer {
+        id: String,
+        name: String,
+        email: String,
+        phone: Option<String>,
+        loyalty_points: u32,
+        // purchase_history: Vec<Transaction>,
+    }
+
+    impl Customer {
+        pub fn new(
+            id: String,
+            name: String,
+            email: String,
+            phone: Option<String>,
+            loyalty_points: u32,
+        ) -> Self {
+            Self {
+                id,
+                name,
+                email,
+                phone,
+                loyalty_points,
+            }
+        }
+    }
+}
+
+// use pos::*;
+
 //
-use std::fmt;
+use std::{
+    fmt::{self},
+    // io::Result,
+    // ops::Add,
+};
 // use std::fmt::{Display, Formatter};
 #[allow(unused_imports)]
 use std::{collections::HashMap, error::Error, io, iter, num::ParseFloatError};
 
 #[derive(Debug)]
-struct Customer {
-    id: String,
-    name: String,
-    email: String,
-    phone: Option<String>,
-    loyalty_points: u32,
-    // purchase_history: Vec<Transaction>,
-}
-
 // #[derive(Debug)]
-
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq, Clone)]
 enum ProductCategory {
     Electronics,
     Furniture,
@@ -26,7 +52,8 @@ enum ProductCategory {
 }
 
 // #[derive(Debug)]
-#[derive(Debug, PartialEq)]
+
+#[derive(Debug, PartialEq, Clone)]
 enum ProductStatus {
     InStock,
     LowStock(u32),
@@ -34,7 +61,7 @@ enum ProductStatus {
     Discontinued,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[allow(dead_code)]
 struct Product {
     id: String,
@@ -226,7 +253,6 @@ impl Inventory {
         Ok(result)
     }
 
-
     // fn search_by_id(&self, user_input:&'static str)->Result<&Product, String>
     // fn search_by<T>(&self, user_input: &T) -> Result<&T, ErrorHandling>
     // {
@@ -240,44 +266,97 @@ impl Inventory {
     //     //     .ok_or(ErrorHandling::InvalidEntry(String::from("not found")));
     //     // Ok(result)
     // }
-    fn search_by<F>(&self, user_input: F)->Option<&Product>
+    fn search_by<F>(&self, user_input: F) -> Option<&Product>
     // fn search_by<T>(&self, user_input: &T) -> Result<&T, ErrorHandling>
     where
-        F: Fn(&Product)->bool,
+        F: Fn(&Product) -> bool,
     {
-        self.containers
-            .iter()
-            .find(|&product| user_input(product))
-            // .ok_or(ErrorHandling::InvalidEntry(String::from("not found")));
-            // .find_map(|&product| Some(product == user_input))
+        self.containers.iter().find(|&product| user_input(product))
+        // .ok_or(ErrorHandling::InvalidEntry(String::from("not found")));
+        // .find_map(|&product| Some(product == user_input))
         // Ok(result)
     }
 
-    fn filter_by_status(&self,status:ProductStatus)->Option<&ProductStatus>{
-        let result=self.containers.iter().filter(|&product| if status==product.status).collect();
-        result
+    fn filter_by_status(&self, status: ProductStatus) -> Vec<&ProductStatus> {
+        self.containers
+            .iter()
+            .filter(|product| product.status == status)
+            .map(|product| &product.status)
+            .collect()
     }
 
-    fn update_product(&mut self)->Result<(),ErrorHandling>{
-        let all_product=self.get_all_product();
-        println!("products:{:?}",all_product);
+    fn update_product(&mut self) -> Result<(), ErrorHandling> {
+        let all_product = self.get_all_product();
+        println!("products:{:?}", all_product);
 
-        let user_key_input=user_input::atoi32("enter row to edit").unwrap_or(1);
-        let user_key_input=user_key_input as usize;
-        let id=user_input::user_input("enter id in string and in the format PROD-***").unwrap_or_default();
-        let name=user_input::user_input("enter name of product").unwrap_or("empty entry".to_owned());
-        let category=ProductCategory::Electronics;
-        let quantity=user_input::atoi32("enter number").unwrap_or(0);
-        let quantity=quantity as u32;
-        let price=user_input::atof64("enter price:").unwrap_or_default();
-        let status=ProductStatus::InStock;
-        let new_product=Product::new(id, name, category, quantity, price, status).unwrap_or_default();
-        self.containers.insert(user_key_input,new_product);
-
+        let user_key_input = user_input::atoi32("enter row to edit").unwrap_or(1);
+        let user_key_input = user_key_input as usize;
+        let id = user_input::user_input("enter id in string and in the format PROD-***")
+            .unwrap_or_default();
+        let name =
+            user_input::user_input("enter name of product").unwrap_or("empty entry".to_owned());
+        let category = ProductCategory::Electronics;
+        let quantity = user_input::atoi32("enter number").unwrap_or(0);
+        let quantity = quantity as u32;
+        let price = user_input::atof64("enter price:").unwrap_or_default();
+        let status = ProductStatus::InStock;
+        let new_product =
+            Product::new(id, name, category, quantity, price, status).unwrap_or_default();
+        self.containers.insert(user_key_input, new_product);
 
         Ok(())
         // Ok()
+    }
 
+    fn total_inventory(&self) {
+        self.containers
+            .iter()
+            .for_each(|product| println!("product:{}", product));
+    }
+
+    // fn total_inventory(&self)->Result<f64,ErrorHandling>{
+    //
+    //     let mut product_price_sum=0;
+    //     let mut product_quantity_sum=0;
+    //     for (_,products) in self.containers.iter().enumerate(){
+    //
+    //         product_price_sum+=products.price;
+    //         product_quantity_sum+=products.quantity
+    //     }
+    //
+    //     let product_total=product_price_sum  as f64* product_quantity_sum as f64;
+    //     Ok(product_total)
+    //
+    // }
+    // fn sort_by__name_len(&self)->Result<(),ErrorHandling>{
+    //     let result=&self.containers.sort_by_key(|product| product.name.len());
+    //     // Ok(())
+    //     // Ok(result)
+    // }
+    //
+    // fn sort_by__id_len(&self)->Result<(),ErrorHandling>{
+    //     let result=&self.containers.sort_by_key(|product| product.id.len());
+    //     // Ok(())
+    //     // Ok(result)
+    // }
+
+    fn sort_id(&self) -> Result<Vec<Product>, ErrorHandling> {
+        if self.containers.is_empty() {
+            return Err(ErrorHandling::ProductNotFound(
+                "no products in fields".to_string(),
+            ));
+        }
+        let mut owned_product: Vec<Product> = self.containers.to_vec();
+        owned_product.sort_by_key(|product| product.id.len());
+        // owned_product.sort_by(|a, b| a.id.cmp(&b.id));
+        Ok(owned_product)
+    }
+    fn sort_name(&self) -> Result<Vec<Product>, ErrorHandling> {
+        let mut owned_product: Vec<Product> = self.containers.to_vec();
+        // let mut owned_product: Vec<Product> = self.containers.iter().cloned().collect();
+        // owned_product.sort_by(|a, b| a.name.len().cmp(&b.name.len()));
+        owned_product.sort_by_key(|product| product.name.len());
+        Ok(owned_product)
     }
 }
 impl Product {
@@ -322,7 +401,7 @@ impl Product {
                 actual: self.quantity as u64,
             });
         } else {
-            self.quantity as i32 - user_quantity
+            self.quantity = (self.quantity - user_quantity as u32) as u32
         };
 
         self.status = match self.quantity {
@@ -365,22 +444,28 @@ impl Product {
     //     let result=&self.containers.iter().f
 
     // }
-    fn update_single_product(&mut self,name:String,price:f64)->Result<(),ErrorHandling>{
-        if name.is_empty(){
-            return Err(ErrorHandling::InvalidEntry("name cannot be emoty".to_string()))
+    fn update_single_product(&mut self, name: String, price: f64) -> Result<(), ErrorHandling> {
+        if name.is_empty() {
+            return Err(ErrorHandling::InvalidEntry(
+                "name cannot be emoty".to_string(),
+            ));
         }
-        if price <= 0.0{
-            return Err(ErrorHandling::InvalidEntry("price cannot be lower or equals to 0".to_owned()))
+        if price <= 0.0 {
+            return Err(ErrorHandling::InvalidEntry(
+                "price cannot be lower or equals to 0".to_owned(),
+            ));
         }
 
-            self.name=name;
-            self.price=price;
-            Ok(())
-            // Self {..,name,price}
-
-
+        self.name = name;
+        self.price = price;
+        Ok(())
+        // Self {..,name,price}
     }
-    // fn total_inventory()
+
+    fn total_cost(&self) -> Result<f64, ErrorHandling> {
+        let result = self.quantity as f64 * self.price;
+        Ok(result)
+    }
 }
 
 impl Error for ErrorHandling {}
@@ -472,9 +557,9 @@ mod user_input {
         // .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "nan".to_string()))?;
         Ok(buffer_converted)
     }
-    pub fn atof64(prompt: &'static str)->Result<f64,std::num::ParseFloatError>{
-        let buffer=user_input(prompt).unwrap_or_default();
-        let buffer_converted=buffer.trim().parse::<f64>()?;
+    pub fn atof64(prompt: &'static str) -> Result<f64, std::num::ParseFloatError> {
+        let buffer = user_input(prompt).unwrap_or_default();
+        let buffer_converted = buffer.trim().parse::<f64>()?;
         Ok(buffer_converted)
     }
 }
