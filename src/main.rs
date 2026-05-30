@@ -5,6 +5,18 @@ use std::fmt;
 use std::{collections::HashMap, error::Error, io, iter, num::ParseFloatError};
 
 #[derive(Debug)]
+struct Customer {
+    id: String,
+    name: String,
+    email: String,
+    phone: Option<String>,
+    loyalty_points: u32,
+    // purchase_history: Vec<Transaction>,
+}
+
+// #[derive(Debug)]
+
+#[derive(Debug, PartialEq)]
 enum ProductCategory {
     Electronics,
     Furniture,
@@ -13,7 +25,8 @@ enum ProductCategory {
     Books,
 }
 
-#[derive(Debug)]
+// #[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum ProductStatus {
     InStock,
     LowStock(u32),
@@ -21,7 +34,7 @@ enum ProductStatus {
     Discontinued,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 #[allow(dead_code)]
 struct Product {
     id: String,
@@ -183,22 +196,61 @@ impl Inventory {
         // option_result.ok_or_else(||ErrorHandling::)
     }
 
-    fn remove_product<'a>(&mut self) -> Result<&'a Product, ErrorHandling> {
+    #[allow(dead_code)]
+    fn clear_db(&mut self) -> Result<(), ErrorHandling> {
+        if self.containers.is_empty() {
+            return Err(ErrorHandling::ProductNotFound(String::from(
+                "field empty and already cleared",
+            )));
+        }
+        self.containers.clear();
+        println!("db cleared");
+        Ok(())
+    }
+
+    #[allow(dead_code)]
+    fn remove_product(&mut self) -> Result<Product, ErrorHandling> {
         let all_product = &self.get_all_product()?;
         println!("product list:{:?}", all_product);
 
         let buffer = user_input::atoi32("enter product to edit").unwrap();
         // let buffer = buffer as usize;
-        let user_input = &self.containers.get(buffer as usize);
-        let user_input=user_input
-            .ok_or_else(|| ErrorHandling::InvalidEntry("error getting input ".to_string()))
-            .map(|product|{
-                 println!("product removed:{}",product);
-            Ok(product))?;
-            )}
-        // Ok(user_input)
+        let num_usize = buffer as usize;
+        if num_usize > self.containers.len() {
+            return Err(ErrorHandling::ProductNotFound(String::from(
+                "error product not found",
+            )));
+        }
+        // let user_input = &self.containers.get(num_usize ).copied();
+        let result = self.containers.remove(num_usize);
+        Ok(result)
+    }
 
-        // Ok(removed_product)
+
+    // fn search_by_id(&self, user_input:&'static str)->Result<&Product, String>
+    // fn search_by<T>(&self, user_input: &T) -> Result<&T, ErrorHandling>
+    // {
+    //     let result=self.containers.iter().find(|id| id==user_input);
+    //     result.ok_or(String::from("not found"));
+
+    //     // self.containers
+    //     //     .iter()
+    //     //     .con
+    //     //     // .find_map(|&product| Some(product == user_input))
+    //     //     .ok_or(ErrorHandling::InvalidEntry(String::from("not found")));
+    //     // Ok(result)
+    // }
+    fn search_by<F>(&self, user_input: F)->Option<&Product>
+    // fn search_by<T>(&self, user_input: &T) -> Result<&T, ErrorHandling>
+    where
+        F: Fn(&Product)->bool,
+    {
+        self.containers
+            .iter()
+            .find(|&product| user_input(product))
+            // .ok_or(ErrorHandling::InvalidEntry(String::from("not found")));
+            // .find_map(|&product| Some(product == user_input))
+        // Ok(result)
     }
 }
 impl Product {
@@ -277,6 +329,14 @@ impl Product {
 
     // fn bulk add(){
     //
+    // }
+
+    // fn search_by<T>(&self,user_input:T)->Result<&T,ErrorHandling>
+    //     where
+    //     T:PartialEq
+    // {
+    //     let result=&self.containers.iter().f
+
     // }
 }
 
