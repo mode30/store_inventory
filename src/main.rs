@@ -252,6 +252,33 @@ impl Inventory {
             // .find_map(|&product| Some(product == user_input))
         // Ok(result)
     }
+
+    fn filter_by_status(&self,status:ProductStatus)->Option<&ProductStatus>{
+        let result=self.containers.iter().filter(|&product| if status==product.status).collect();
+        result
+    }
+
+    fn update_product(&mut self)->Result<(),ErrorHandling>{
+        let all_product=self.get_all_product();
+        println!("products:{:?}",all_product);
+
+        let user_key_input=user_input::atoi32("enter row to edit").unwrap_or(1);
+        let user_key_input=user_key_input as usize;
+        let id=user_input::user_input("enter id in string and in the format PROD-***").unwrap_or_default();
+        let name=user_input::user_input("enter name of product").unwrap_or("empty entry".to_owned());
+        let category=ProductCategory::Electronics;
+        let quantity=user_input::atoi32("enter number").unwrap_or(0);
+        let quantity=quantity as u32;
+        let price=user_input::atof64("enter price:").unwrap_or_default();
+        let status=ProductStatus::InStock;
+        let new_product=Product::new(id, name, category, quantity, price, status).unwrap_or_default();
+        self.containers.insert(user_key_input,new_product);
+
+
+        Ok(())
+        // Ok()
+
+    }
 }
 impl Product {
     fn new(
@@ -338,6 +365,22 @@ impl Product {
     //     let result=&self.containers.iter().f
 
     // }
+    fn update_single_product(&mut self,name:String,price:f64)->Result<(),ErrorHandling>{
+        if name.is_empty(){
+            return Err(ErrorHandling::InvalidEntry("name cannot be emoty".to_string()))
+        }
+        if price <= 0.0{
+            return Err(ErrorHandling::InvalidEntry("price cannot be lower or equals to 0".to_owned()))
+        }
+
+            self.name=name;
+            self.price=price;
+            Ok(())
+            // Self {..,name,price}
+
+
+    }
+    // fn total_inventory()
 }
 
 impl Error for ErrorHandling {}
@@ -427,6 +470,11 @@ mod user_input {
         let buffer = user_input(prompt).unwrap_or_default();
         let buffer_converted = buffer.trim().parse::<i32>()?;
         // .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "nan".to_string()))?;
+        Ok(buffer_converted)
+    }
+    pub fn atof64(prompt: &'static str)->Result<f64,std::num::ParseFloatError>{
+        let buffer=user_input(prompt).unwrap_or_default();
+        let buffer_converted=buffer.trim().parse::<f64>()?;
         Ok(buffer_converted)
     }
 }
