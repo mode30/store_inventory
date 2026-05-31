@@ -1,28 +1,47 @@
 pub mod pos {
+    use core::fmt;
 
-    pub struct Customer {
-        id: String,
-        name: String,
-        email: String,
+    use crate::Product;
+
+    pub struct Transaction {
+        transaction_history: Vec<Product>,
+    }
+
+    pub struct Customer<'a> {
+        id: &'a str,
+        name: &'a str,
+        email: &'a str,
         phone: Option<String>,
-        loyalty_points: u32,
         // purchase_history: Vec<Transaction>,
     }
 
-    impl Customer {
-        pub fn new(
-            id: String,
-            name: String,
-            email: String,
-            phone: Option<String>,
-            loyalty_points: u32,
-        ) -> Self {
+    impl<'a> Customer<'a> {
+        pub fn new(id: &'a str, name: &'a str, email: &'a str, phone: Option<String>) -> Self {
             Self {
                 id,
                 name,
                 email,
                 phone,
-                loyalty_points,
+            }
+        }
+    }
+
+    impl<'a> fmt::Display for Customer<'a> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(
+                f,
+                "id:{:?}\nname:{:?}\n,email:{:?}\n,phone:{:?}\n,",
+                self.id, self.name, self.email, self.phone
+            )
+        }
+    }
+    impl<'a> Default for Customer<'a> {
+        fn default() -> Self {
+            Self {
+                id: "Cus-1256",
+                name: "Tony Stark",
+                email: "tonyStark@gmail.com",
+                phone: Some(String::from("+123-453-231")),
             }
         }
     }
@@ -155,6 +174,24 @@ fn main() {
     for (index, products) in new_container.containers.iter().enumerate() {
         println!("{}. products:{}", index, products);
     }
+
+    let customer_1 = pos::Customer::new(
+        "Cus-0001",
+        "benjamin",
+        "bwnjamin_carson@gmail.com",
+        Some("+123-456-667".to_string()),
+    );
+    println!("{}", customer_1);
+    let customer_2 = pos::Customer::default();
+    let customer_3 = pos::Customer::default();
+    let customer_4 = pos::Customer::default();
+    let customer_5 = pos::Customer::default();
+
+    println!("customer 1:{}", customer_1);
+    println!("customer 2:{}", customer_2);
+    println!("customer 3:{}", customer_3);
+    println!("customer 4:{}", customer_4);
+    println!("customer 5:{}", customer_5);
 }
 
 #[allow(dead_code)]
